@@ -13,8 +13,8 @@
         </select>
         <input type="number" name="input-one" id="input-one" v-model="amountOne" @input="convert()">
       </div>
+
       <div>
-        <button @click="convert()">Конвертировать</button>
         <p id="baseValue">1 {{ currencyOne }} = {{ rate }} {{ currencyTwo }}</p>
       </div>
 
@@ -39,6 +39,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
 data() {
   return {
@@ -53,14 +55,13 @@ data() {
 },
 methods: {
   convert() {
-    fetch(`https://v6.exchangerate-api.com/v6/8d45a3826755fceac6db2437/latest/${this.currencyOne}`)
-    .then(res => res.json())
+    axios.get(`https://v6.exchangerate-api.com/v6/8d45a3826755fceac6db2437/latest/${this.currencyOne}`)
+    .then(res => res.data)
     .then(data => {
     this.data = data
     this.rate = data.conversion_rates[this.currencyTwo]
     this.amountTwo = this.amountOne * this.rate.toFixed(2)
-    const newDate = data.time_last_update_utc.substring(0,17)
-    this.update = newDate
+    this.update = data.time_last_update_utc.substring(5,17)
     });
   },
   calculate() {
